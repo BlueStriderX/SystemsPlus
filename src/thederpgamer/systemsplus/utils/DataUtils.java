@@ -2,7 +2,10 @@ package thederpgamer.systemsplus.utils;
 
 import api.common.GameClient;
 import api.common.GameCommon;
+import api.mod.config.PersistentObjectUtil;
+import org.schema.game.common.data.SegmentPiece;
 import thederpgamer.systemsplus.SystemsPlus;
+import thederpgamer.systemsplus.data.WeaponUserData;
 
 /**
  * <Description>
@@ -25,5 +28,15 @@ public class DataUtils {
             } catch(Exception ignored) { }
             return null;
         }
+    }
+
+    public static WeaponUserData getWeaponUserData(SegmentPiece segmentPiece) {
+        for(Object object : PersistentObjectUtil.getObjects(SystemsPlus.getInstance().getSkeleton(), WeaponUserData.class)) {
+            WeaponUserData userData = (WeaponUserData) object;
+            if(userData.entityId == segmentPiece.getSegmentController().getId() && userData.index == segmentPiece.getAbsoluteIndex()) {
+                return userData;
+            }
+        }
+        return new WeaponUserData(segmentPiece);
     }
 }

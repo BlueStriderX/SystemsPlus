@@ -4,8 +4,7 @@ import api.mod.config.FileConfiguration;
 import thederpgamer.systemsplus.SystemsPlus;
 
 /**
- * ConfigManager
- * Manages mod config files and values.
+ * Manages mod config files and data.
  *
  * @author TheDerpGamer
  * @since 06/07/2021
@@ -22,8 +21,7 @@ public class ConfigManager {
     //System Config
     private static FileConfiguration systemConfig;
     private static final String[] defaultSystemConfig = {
-            "positive-armor-integrity-modifier: 0.45",
-            "negative-armor-integrity-modifier 0.15"
+
     };
 
     public static void initialize(SystemsPlus instance) {

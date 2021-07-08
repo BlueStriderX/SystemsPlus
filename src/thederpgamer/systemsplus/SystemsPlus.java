@@ -1,20 +1,13 @@
 package thederpgamer.systemsplus;
 
-import api.listener.Listener;
-import api.listener.events.gui.HudCreateEvent;
-import api.listener.events.register.ManagerContainerRegisterEvent;
-import api.mod.StarLoader;
 import api.mod.StarMod;
 import org.apache.commons.io.IOUtils;
-import org.schema.game.common.data.element.ElementInformation;
-import org.schema.game.common.data.element.ElementKeyMap;
 import org.schema.schine.resource.ResourceLoader;
-import thederpgamer.systemsplus.gui.hud.ArmorHPHudOverlay;
-import thederpgamer.systemsplus.systems.ArmorHPSystem;
 import thederpgamer.systemsplus.utils.ConfigManager;
 import thederpgamer.systemsplus.utils.LogManager;
 import thederpgamer.systemsplus.utils.MessageType;
 import thederpgamer.systemsplus.utils.ResourceManager;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.zip.ZipEntry;
@@ -41,11 +34,15 @@ public class SystemsPlus extends StarMod {
     }
 
     //Data
-    private String[] overwriteClasses = {
+    private final String[] overwriteClasses = {
+            "WeaponRowElementInterface",
+            "WeaponRowElement",
+            "WeaponPowerBatteryRowElement",
+            "WeaponScrollableListNew",
+            "WeaponSlotOverlayElement",
             "ProjectileHandlerSegmentController",
             "DamageBeamHitHandlerSegmentController"
     };
-    public ArmorHPHudOverlay armorHPHudOverlay;
 
     @Override
     public void onEnable() {
@@ -53,7 +50,6 @@ public class SystemsPlus extends StarMod {
         ConfigManager.initialize(this);
         LogManager.initialize();
         LogManager.logMessage(MessageType.INFO, "Successfully loaded mod data.");
-
         registerListeners();
     }
 
@@ -69,23 +65,7 @@ public class SystemsPlus extends StarMod {
     }
 
     private void registerListeners() {
-        StarLoader.registerListener(HudCreateEvent.class, new Listener<HudCreateEvent>() {
-            @Override
-            public void onEvent(HudCreateEvent event) {
-                event.addElement(armorHPHudOverlay = new ArmorHPHudOverlay(event.getInputState()));
-            }
-        }, this);
 
-        StarLoader.registerListener(ManagerContainerRegisterEvent.class, new Listener<ManagerContainerRegisterEvent>() {
-            @Override
-            public void onEvent(ManagerContainerRegisterEvent event) {
-                if(event.getSegmentController().isOnServer()) {
-                    for(ElementInformation blockInfo : ElementKeyMap.getInfoArray()) {
-                        if(blockInfo.isArmor()) event.addModMCModule(new ArmorHPSystem(event.getSegmentController(), event.getContainer(), blockInfo.id));
-                    }
-                }
-            }
-        }, this);
     }
 
     private byte[] overwriteClass(String className, byte[] byteCode) {

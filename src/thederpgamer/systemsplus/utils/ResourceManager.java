@@ -5,7 +5,6 @@ import org.schema.schine.graphicsengine.core.ResourceException;
 import org.schema.schine.graphicsengine.forms.Sprite;
 import org.schema.schine.resource.ResourceLoader;
 import thederpgamer.systemsplus.SystemsPlus;
-
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -22,15 +21,17 @@ public class ResourceManager {
     };
 
     private static final String[] spriteNames = {
-
+            "hex-icon-1",
+            "triangle-icon-1",
+            "inverted-triangle-icon-1"
     };
 
     private static final String[] modelNames = {
 
     };
 
-    private static HashMap<String, StarLoaderTexture> textureMap = new HashMap<>();
-    private static HashMap<String, Sprite> spriteMap = new HashMap<>();
+    public static HashMap<String, StarLoaderTexture> textureMap = new HashMap<>();
+    public static HashMap<String, Sprite> spriteMap = new HashMap<>();
 
     public static void loadResources(final SystemsPlus instance, final ResourceLoader loader) {
 

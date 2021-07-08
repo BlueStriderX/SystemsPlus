@@ -1,7 +1,6 @@
 package thederpgamer.systemsplus.utils;
 
 /**
- * MessageType
  * <Description>
  *
  * @author TheDerpGamer

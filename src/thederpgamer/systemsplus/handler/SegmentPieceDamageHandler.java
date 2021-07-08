@@ -7,7 +7,6 @@ import org.schema.game.common.controller.elements.SpaceStationManagerContainer;
 import org.schema.game.common.data.ManagedSegmentController;
 import org.schema.game.common.data.SegmentPiece;
 import org.schema.game.common.data.world.SimpleTransformableSendableObject;
-import thederpgamer.systemsplus.systems.ArmorHPSystem;
 
 /**
  * <Description>
@@ -20,11 +19,7 @@ public class SegmentPieceDamageHandler {
     public static float handle(SegmentPiece hitSegment, float totalDamage) {
         SegmentController segmentController = hitSegment.getSegmentController();
         ManagerContainer<?> managerContainer = getManagerContainer(segmentController);
-        if(managerContainer != null && managerContainer.getModMCModule(hitSegment.getType()) != null) {
-            ArmorHPSystem armorHPSystem = (ArmorHPSystem) managerContainer.getModMCModule(hitSegment.getType());
-            armorHPSystem.setCurrentHP((float) Math.max(armorHPSystem.getCurrentHP() - (totalDamage * 0.1), 0));
-            totalDamage -= (totalDamage * (armorHPSystem.getCurrentHP() / armorHPSystem.getMaxHP())) * 0.85;
-        }
+
         return totalDamage;
     }
 
