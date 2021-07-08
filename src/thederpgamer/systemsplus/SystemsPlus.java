@@ -7,7 +7,6 @@ import thederpgamer.systemsplus.utils.ConfigManager;
 import thederpgamer.systemsplus.utils.LogManager;
 import thederpgamer.systemsplus.utils.MessageType;
 import thederpgamer.systemsplus.utils.ResourceManager;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.zip.ZipEntry;
@@ -35,8 +34,8 @@ public class SystemsPlus extends StarMod {
 
     //Data
     private final String[] overwriteClasses = {
-            "WeaponRowElementInterface",
             "WeaponRowElement",
+            "WeaponSegmentControllerUsableElement",
             "WeaponPowerBatteryRowElement",
             "WeaponScrollableListNew",
             "WeaponSlotOverlayElement",

@@ -25,7 +25,7 @@ import org.schema.schine.graphicsengine.forms.gui.newgui.*;
 import org.schema.schine.input.InputState;
 import thederpgamer.systemsplus.SystemsPlus;
 import thederpgamer.systemsplus.gui.WeaponIconSelectionPane;
-
+import thederpgamer.systemsplus.utils.DataUtils;
 import java.util.*;
 
 /**
@@ -160,12 +160,13 @@ public class WeaponScrollableListNew extends ScrollableTableList<WeaponRowElemen
 
             r.extendableBlockedInterface = f;
             r.expanded = new GUIElementList(getState());
-//
-            final GUITextOverlayTableInnerDescription description = new GUITextOverlayTableInnerDescription(10, 10, getState());
-            description.setText(f.getDescriptionList());
-            description.setPos(4, 2, 0);
 
             //INSERTED CODE
+            int width = (r.expanded.getWidth() < 100) ? 643 : (int) r.expanded.getWidth();
+            final GUITextOverlayTableInnerDescription description = new GUITextOverlayTableInnerDescription(width, 10, getState());
+            description.setText(f.getDescriptionList());
+            description.setPos(4, 30, 0);
+
             GUIHorizontalButtonTablePane buttonPane = new GUIHorizontalButtonTablePane(getState(), 3, 1, r.expanded);
             buttonPane.onInit();
             buttonPane.addButton(0, 0, "DETAILS", GUIHorizontalArea.HButtonColor.BLUE, new GUICallback() {
@@ -217,7 +218,7 @@ public class WeaponScrollableListNew extends ScrollableTableList<WeaponRowElemen
                 public void callback(GUIElement guiElement, MouseEvent mouseEvent) {
                     if(mouseEvent.pressedLeftMouse()) {
                         getState().getController().queueUIAudio("0022_menu_ui - select 2");
-                        (new PlayerGameTextInput("WeaponRenameInput", getState(), 32, "Rename", "Set a custom name for this system.", f.getUserData().name) {
+                        (new PlayerGameTextInput("WeaponRenameInput", getState(), 32, "Rename", "Set a custom name for this system.", DataUtils.getWeaponUserData(f).name) {
                             @Override
                             public String[] getCommandPrefixes() {
                                 return null;
@@ -240,11 +241,14 @@ public class WeaponScrollableListNew extends ScrollableTableList<WeaponRowElemen
 
                             @Override
                             public boolean onInput(String entry) {
-                                if(entry.length() > 0 && !entry.equals(f.getUserData().name)) {
-                                    f.getUserData().name = entry;
+                                if(entry.length() > 0 && !entry.equals(DataUtils.getWeaponUserData(f).name)) {
+                                    DataUtils.getWeaponUserData(f).name = entry;
+                                    if(f instanceof WeaponPowerBatteryRowElement) ((WeaponPowerBatteryRowElement) f).initOverlays();
+                                    else if(f instanceof WeaponRowElement) ((WeaponRowElement) f).initOverlays();
+                                    else if(f instanceof WeaponSegmentControllerUsableElement) ((WeaponSegmentControllerUsableElement) f).initOverlays();
                                     PersistentObjectUtil.save(SystemsPlus.getInstance().getSkeleton());
-                                    if(f instanceof WeaponRowElement) ((WeaponRowElement) f).initOverlays();
-                                    else if(f instanceof WeaponPowerBatteryRowElement) ((WeaponPowerBatteryRowElement) f).initOverlays();
+                                    flagDirty();
+                                    handleDirty();
                                     return true;
                                 } else return false;
                             }
@@ -273,7 +277,6 @@ public class WeaponScrollableListNew extends ScrollableTableList<WeaponRowElemen
                 public void callback(GUIElement guiElement, MouseEvent mouseEvent) {
                     if(mouseEvent.pressedLeftMouse()) {
                         getState().getController().queueUIAudio("0022_menu_ui - select 3");
-                        //Todo: Color selection
                         final WeaponIconSelectionPane selectionPane = new WeaponIconSelectionPane(getState(), f);
                         PlayerGameOkCancelInput inputPanel = new PlayerGameOkCancelInput("ChangeWeaponIconPanel", getState(), "Choose Icon", "Choose a custom icon for this weapon.") {
                             @Override
@@ -282,15 +285,23 @@ public class WeaponScrollableListNew extends ScrollableTableList<WeaponRowElemen
 
                             @Override
                             public void pressedOK() {
-                                getState().getController().queueUIAudio("0022_menu_ui - enter");
-                                f.getUserData().weaponIcon = selectionPane.getSelectedIcon().getName();
-                                PersistentObjectUtil.save(SystemsPlus.getInstance().getSkeleton());
-                                if(f instanceof WeaponRowElement) ((WeaponRowElement) f).initOverlays();
-                                else if(f instanceof WeaponPowerBatteryRowElement) ((WeaponPowerBatteryRowElement) f).initOverlays();
+                                if(selectionPane.getSelectedIcon() != null) {
+                                    getState().getController().queueUIAudio("0022_menu_ui - enter");
+                                    if(selectionPane.getSelectedIcon().getName().endsWith("-")) DataUtils.getWeaponUserData(f).weaponIcon = "DEFAULT";
+                                    else DataUtils.getWeaponUserData(f).weaponIcon = selectionPane.getSelectedIcon().getName();
+                                    if(f instanceof WeaponPowerBatteryRowElement) ((WeaponPowerBatteryRowElement) f).initOverlays();
+                                    else if(f instanceof WeaponRowElement) ((WeaponRowElement) f).initOverlays();
+                                    else if(f instanceof WeaponSegmentControllerUsableElement) ((WeaponSegmentControllerUsableElement) f).initOverlays();
+                                    PersistentObjectUtil.save(SystemsPlus.getInstance().getSkeleton());
+                                    flagDirty();
+                                    handleDirty();
+                                    deactivate();
+                                }
                             }
                         };
                         inputPanel.getInputPanel().setOkButtonText("SELECT");
                         inputPanel.getInputPanel().onInit();
+                        selectionPane.getPos().y += description.getTextHeight() - 4;
                         selectionPane.onInit();
                         inputPanel.getInputPanel().getContent().attach(selectionPane);
                         inputPanel.activate();
@@ -348,7 +359,7 @@ public class WeaponScrollableListNew extends ScrollableTableList<WeaponRowElemen
                 }
             });
              */
-            GUIAncor c = new GUIAncor(getState(), 100, 100){
+            GUIAncor c = new GUIAncor(getState(), width, 100){
 
                 @Override
                 public void draw() {
@@ -359,10 +370,9 @@ public class WeaponScrollableListNew extends ScrollableTableList<WeaponRowElemen
 
             };
 
-            //detailsButton.setPos(0, c.getHeight()+6, 0);
             c.attach(description);
 
-            GUIScrollablePanel scroll = new GUIScrollablePanel(100, 100, getState()){
+            GUIScrollablePanel scroll = new GUIScrollablePanel(width, 100, getState()){
 
                 @Override
                 public void draw() {
@@ -378,7 +388,6 @@ public class WeaponScrollableListNew extends ScrollableTableList<WeaponRowElemen
             GUIListElement elem = new GUIListElement(scroll, scroll, getState());
             elem.heightDiff = 4;
             r.expanded.add(elem);
-            //r.expanded.attach(detailsButton);
             r.expanded.attach(buttonPane);
             //
             r.onExpanded = new GUIEnterableListOnExtendedCallback() {

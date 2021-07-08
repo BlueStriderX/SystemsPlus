@@ -20,9 +20,9 @@ import org.schema.schine.graphicsengine.forms.gui.GUIElement;
 import org.schema.schine.graphicsengine.forms.gui.GUITextOverlay;
 import org.schema.schine.input.InputState;
 import thederpgamer.systemsplus.data.WeaponUserData;
-import thederpgamer.systemsplus.utils.Colors;
 import thederpgamer.systemsplus.utils.DataUtils;
 import thederpgamer.systemsplus.utils.ResourceManager;
+
 import java.util.List;
 
 /**
@@ -63,12 +63,10 @@ public class WeaponRowElement implements WeaponRowElementInterface {
     //INSERTED CODE
     private WeaponUserData userData;
 
-    @Override
     public WeaponUserData getUserData() {
         return userData;
     }
 
-    @Override
     public void setUserData(WeaponUserData userData) {
         this.userData = userData;
     }
@@ -149,10 +147,7 @@ public class WeaponRowElement implements WeaponRowElementInterface {
         weaponIcon.setType(piece.getType(), piece.getAbsoluteIndex());
         //INSERTED CODE
         if(userData.weaponIcon.equals("DEFAULT")) weaponIcon.setSpriteSubIndex(ElementKeyMap.getInfo(piece.getType()).getBuildIconNum());
-        else {
-            weaponIcon.setSprite(ResourceManager.getSprite(userData.weaponIcon));
-            weaponIcon.getSprite().setTint(Colors.valueOf(userData.color).color);
-        }
+        else weaponIcon.setSprite(ResourceManager.getSprite(userData.weaponIcon));
 
         GUITextOverlay nameOverlay = new GUITextOverlay(10, 10, state);
         if (info.id == ElementKeyMap.LOGIC_REMOTE_INNER) {
