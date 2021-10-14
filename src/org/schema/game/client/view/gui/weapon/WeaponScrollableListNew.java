@@ -26,6 +26,7 @@ import org.schema.schine.input.InputState;
 import thederpgamer.systemsplus.SystemsPlus;
 import thederpgamer.systemsplus.gui.WeaponIconSelectionPane;
 import thederpgamer.systemsplus.utils.DataUtils;
+
 import java.util.*;
 
 /**
@@ -237,6 +238,7 @@ public class WeaponScrollableListNew extends ScrollableTableList<WeaponRowElemen
                             @Override
                             public void onDeactivate() {
                                 getState().getController().queueUIAudio("0022_menu_ui - enter");
+                                getAssignWeaponControllerManager().setActive(true);
                             }
 
                             @Override
@@ -253,6 +255,7 @@ public class WeaponScrollableListNew extends ScrollableTableList<WeaponRowElemen
                                 } else return false;
                             }
                         }).activate();
+                        getAssignWeaponControllerManager().setActive(false);
                     }
                 }
 
@@ -281,6 +284,7 @@ public class WeaponScrollableListNew extends ScrollableTableList<WeaponRowElemen
                         PlayerGameOkCancelInput inputPanel = new PlayerGameOkCancelInput("ChangeWeaponIconPanel", getState(), "Choose Icon", "Choose a custom icon for this weapon.") {
                             @Override
                             public void onDeactivate() {
+                                getAssignWeaponControllerManager().setActive(true);
                             }
 
                             @Override
@@ -301,10 +305,13 @@ public class WeaponScrollableListNew extends ScrollableTableList<WeaponRowElemen
                         };
                         inputPanel.getInputPanel().setOkButtonText("SELECT");
                         inputPanel.getInputPanel().onInit();
-                        selectionPane.getPos().y += description.getTextHeight() - 4;
+                        inputPanel.getInputPanel().getContent().setWidth(514);
+                        inputPanel.getInputPanel().getBackground().setWidth(514);
+                        selectionPane.getPos().y += 30;
                         selectionPane.onInit();
                         inputPanel.getInputPanel().getContent().attach(selectionPane);
                         inputPanel.activate();
+                        getAssignWeaponControllerManager().setActive(false);
                     }
                 }
 

@@ -19,12 +19,15 @@ public class ResourceManager {
             "hex-icon-1",
             "hex-icon-2",
             "hex-icon-3",
+            "hex-icon-4",
             "triangle-icon-1",
             "triangle-icon-2",
             "triangle-icon-3",
+            "triangle-icon-4",
             "inverted-triangle-icon-1",
             "inverted-triangle-icon-2",
-            "inverted-triangle-icon-3"
+            "inverted-triangle-icon-3",
+            "inverted-triangle-icon-4"
     };
 
     public static HashMap<String, Sprite> spriteMap = new HashMap<>();
@@ -39,6 +42,7 @@ public class ResourceManager {
                     for(Colors color : Colors.values()) {
                         String spriteVariant = spriteName + "-" + color.name().toLowerCase();
                         Sprite sprite = StarLoaderTexture.newSprite(Colors.setTint(spriteImage, color), instance, spriteVariant);
+                        sprite.setPositionCenter(true);
                         sprite.setName(spriteVariant);
                         spriteMap.put(spriteVariant, sprite);
                     }
@@ -49,5 +53,14 @@ public class ResourceManager {
 
     public static Sprite getSprite(String name) {
         return spriteMap.get(name);
+    }
+
+    public static String getName(Sprite sprite) {
+        try {
+            String textureName = sprite.getMaterial().getTexture().getName().replace(".png", "");
+            if(textureName.contains("/")) textureName = textureName.substring(textureName.lastIndexOf("/") + 1);
+            return textureName;
+        } catch(Exception ignored) { }
+        return sprite.getName();
     }
 }

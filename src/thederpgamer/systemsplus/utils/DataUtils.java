@@ -11,7 +11,6 @@ import org.schema.game.common.controller.elements.SegmentControllerUsable;
 import org.schema.game.common.data.SegmentPiece;
 import thederpgamer.systemsplus.SystemsPlus;
 import thederpgamer.systemsplus.data.WeaponUserData;
-
 import java.util.ArrayList;
 
 /**
