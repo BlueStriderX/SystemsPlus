@@ -4,20 +4,20 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * <Description>
+ * Contains misc date and time utilities.
  *
  * @author TheDerpGamer
- * @since 06/09/2021
+ * @version 1.0 - [10/12/2021]
  */
 public class DateUtils {
 
-    public static int getAgeDays(Date date) {
+    public static float getAgeDays(Date date) {
         Date current = new Date(System.currentTimeMillis());
         long difference = Math.abs(current.getTime() - date.getTime());
-        return (int) (difference / (1000 * 60 * 60 * 24));
+        return ((float) (difference / (1000 * 60 * 60 * 24)));
     }
 
-    public static int getAgeDays(long time) {
+    public static float getAgeDays(long time) {
         return getAgeDays(new Date(time));
     }
 

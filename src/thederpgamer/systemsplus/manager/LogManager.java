@@ -1,19 +1,40 @@
-package thederpgamer.systemsplus.utils;
+package thederpgamer.systemsplus.manager;
 
+import api.DebugFile;
 import com.sun.istack.internal.Nullable;
+import thederpgamer.systemsplus.SystemsPlus;
+import thederpgamer.systemsplus.utils.DataUtils;
+import thederpgamer.systemsplus.utils.DateUtils;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.LinkedList;
 
 /**
- * <Description>
+ * Handles mod specific logging for SystemsPlus.
  *
  * @author TheDerpGamer
- * @since 06/09/2021
+ * @version 1.0 - [10/12/2021]
  */
 public class LogManager {
 
+    private enum MessageType {
+        DEBUG("[DEBUG]: "),
+        INFO("[INFO]: "),
+        WARNING("[WARNING]: "),
+        ERROR("[ERROR]: "),
+        CRITICAL("[CRITICAL]: ");
+
+        public String prefix;
+
+        MessageType(String prefix) {
+            this.prefix = prefix;
+        }
+    }
+
     private static FileWriter logWriter;
+    private static final LinkedList<String> messageQueue = new LinkedList<>();
 
     public static void initialize() {
         String logFolderPath = DataUtils.getWorldDataPath() + "/logs";
@@ -47,42 +68,58 @@ public class LogManager {
         }
     }
 
-    public static void logWarning(String message, @Nullable Exception exception) {
-        if(exception != null) logMessage(MessageType.WARNING, message + ":\n" + exception.getMessage());
-        else logMessage(MessageType.WARNING, message);
-    }
-
-    public static void logException(String message, Exception exception) {
-        logMessage(MessageType.ERROR, message + ":\n" + exception.getMessage());
+    public static void logInfo(String message) {
+        logMessage(MessageType.INFO, message);
     }
 
     public static void logDebug(String message) {
         if(ConfigManager.getMainConfig().getBoolean("debug-mode")) logMessage(MessageType.DEBUG, message);
     }
 
-    public static void logMessage(MessageType messageType, String message) {
-        String prefix = "[" + DateUtils.getTimeFormatted() + "] [SystemsPlus] " + messageType.prefix;
-        try {
-            StringBuilder builder = new StringBuilder();
-            builder.append(prefix);
-            String[] lines = message.split("\n");
-            if(lines.length > 1) {
-                for(int i = 0; i < lines.length; i ++) {
-                    builder.append(lines[i]);
-                    if(i < lines.length - 1) {
-                        if(i > 1) for(int j = 0; j < prefix.length(); j ++) builder.append(" ");
+    public static void logWarning(String message, @Nullable
+            Exception exception) {
+        if(exception != null) logMessage(MessageType.WARNING, message + ":\n" + exception.getMessage());
+        else logMessage(MessageType.WARNING, message);
+    }
+
+    public static void logException(String message, Exception exception) {
+        exception.printStackTrace();
+        logMessage(MessageType.ERROR, message + ":\n" + exception.getMessage());
+    }
+
+    public static void logCritical(String message, Exception exception) {
+        exception.printStackTrace();
+        logMessage(MessageType.CRITICAL, message + ":\n" + exception.getMessage());
+        System.exit(1);
+    }
+
+    private static void logMessage(MessageType messageType, String message) {
+        if(!messageQueue.contains(message) || messageType.equals(MessageType.CRITICAL)) {
+            String prefix = "[" + DateUtils.getTimeFormatted() + "] [SystemsPlus] " + messageType.prefix;
+            try {
+                StringBuilder builder = new StringBuilder();
+                builder.append(prefix);
+                String[] lines = message.split("\n");
+                if(lines.length > 1) {
+                    for(int i = 0; i < lines.length; i ++) {
+                        builder.append(lines[i]);
+                        if(i < lines.length - 1) {
+                            if(i > 1) for(int j = 0; j < prefix.length(); j ++) builder.append(" ");
+                        }
                     }
+                } else {
+                    builder.append(message);
                 }
-            } else {
-                builder.append(message);
+                System.out.println(builder.toString());
+                logWriter.append(builder.toString()).append("\n");
+                DebugFile.log(builder.toString(), SystemsPlus.getInstance());
+            } catch(IOException var3) {
+                var3.printStackTrace();
             }
-            System.out.println(builder.toString());
-            logWriter.append(builder.toString()).append("\n");
-            logWriter.flush();
-        } catch(IOException var3) {
-            var3.printStackTrace();
+            if(messageType.equals(MessageType.CRITICAL)) System.exit(1);
         }
-        if(messageType.equals(MessageType.CRITICAL)) System.exit(1);
+        if(messageQueue.size() >= 5) messageQueue.removeLast(); //Prevent spam from repeated messages
+        messageQueue.addFirst(message);
     }
 
     public static void clearLogs() {

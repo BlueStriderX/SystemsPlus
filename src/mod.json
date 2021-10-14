@@ -1,9 +1,9 @@
 {
   "name": "SystemsPlus",
   "author": "TheDerpGamer",
-  "description": "Overhauls StarMade's systems to make them more interactive and fun.",
-  "version": "0.1.6",
-  "starmade_version": "0.202.112",
+  "description": "Completely overhauls StarMade's weapon systems for more engaging and versatile combat.",
+  "version": "1.0.0",
+  "starmade_version": "0.202.127",
   "client_mod": false,
   "server_mod": false,
   "main_class": "thederpgamer.systemsplus.SystemsPlus",
